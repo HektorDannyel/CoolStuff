@@ -59,3 +59,16 @@ find_cat <- function(hypotenuse = 5){
 
 find_cat(2022)
 
+# Próximos passos
+#
+# Comportar grandes números:
+#
+# Utilizar decomposição fatorial dos números não-primos para calcular triângulos
+# proporcionais com quadrados menores e ganhar mais tempo
+#
+# Comportar múltiplos inputs:
+#
+# Condicionar a função a trabalhar de acordo com o tamanho do argumento hypotenuse;
+# Se len(hypotenuse) == 1, manter o algoritmo como tal
+# Se len(hypotenuse) > 1, deixar o algoritmo dinâmico para se mover ao longo do vetor e
+# cuspir uma matriz de tamanho 2:n com as combinações de catetos.
