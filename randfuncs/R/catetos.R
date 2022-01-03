@@ -23,48 +23,98 @@ find_cat <- function(hypotenuse = 5){
 
     stop("Not supported numeric format. Input value must be an integer.")
 
+    } else if(hypotenuse <= 0){
+
+      stop("Invalid input. The hypotenuse must be > 0.")
+
   }
 
   options(digits = 10)
 
-  h2 <- hypotenuse^2
+  seq_to_hyp <- seq_len(hypotenuse)
 
-  n_seq <- 1:h2
-  sqrts <- sqrt(n_seq)
-  n_seq_sqrt <- n_seq[abs(sqrts) - round(sqrts, 0) == 0]
+  hyp_divisors <- seq_to_hyp[hypotenuse%%seq_to_hyp == 0]
 
-  for(i in 1:length(n_seq_sqrt)){
+  if(hypotenuse == 1){
 
-    c1 <- n_seq_sqrt[i]
+    grt_divisor <- 1
 
-    c2 <- h2 - c1
+  } else {
 
-    if((abs(sqrt(c2)) - round(sqrt(c2), 0) == 0)){
+    grt_divisor <- hyp_divisors[length(hyp_divisors)/2]
 
-      if(c2 == 0 & sqrt(c1) == i){
+  }
 
-        stop(paste("No matches found. It is not possible to find a triangle with",
-                 "hypotenuse", hypotenuse, "and whole catheti."))
+  hyp_reduced <- hypotenuse/grt_divisor
 
-        } else {
+  if(hyp_reduced < 500){
 
-          return(paste0("The two catheti for the hypotenuse of ", hypotenuse, " are ",
-                    sqrt(c1), " and ", sqrt(c2), "."))
-          break
+    h2 <- hyp_reduced^2
 
-        }
+    n_seq <- 1:h2
+    sqrts <- sqrt(n_seq)
+    n_seq_sqrt <- n_seq[abs(sqrts) - round(sqrts, 0) == 0]
+
+    for(i in 1:length(n_seq_sqrt)){
+
+      c1 <- n_seq_sqrt[i]
+
+      c2 <- h2 - c1
+
+      if((abs(sqrt(c2)) - round(sqrt(c2), 0) == 0)){
+
+        if(c2 == 0 & sqrt(c1) == i){
+
+          stop(paste("No matches found. It is not possible to find a triangle with",
+                   "hypotenuse", hypotenuse, "and whole catheti."))
+
+          } else {
+
+            return(sqrt(c(c1, c2))*grt_divisor)
+            break
+
+          }
+      }
     }
+  } else {
+
+    seq_divisors <- c(0, seq_to_hyp[seq_to_hyp %% 500 == 0], ceiling(hypotenuse/500)*500)
+
+    for(i in 1:length(seq_divisors)){
+
+      h2 <- hyp_reduced^2
+
+      n_seq <- ((1 + seq_divisors[i]):seq_divisors[i + 1])^2
+      sqrts <- sqrt(n_seq)
+
+      for(j in 1:length(n_seq)){
+
+        c1 <- n_seq[j]
+
+        c2 <- h2 - c1
+
+        if((abs(sqrt(c2)) - round(sqrt(c2), 0) == 0)){
+
+          if(c2 == 0 | sqrt(c1) == j){
+
+            stop(paste("No matches found. It is not possible to find a triangle with",
+                       "hypotenuse", hypotenuse, "and whole catheti."))
+
+          } else {
+
+            return(sqrt(c(c1, c2))*grt_divisor)
+            break
+
+          }
+        }
+      }
+
+    }
+
   }
 }
 
-find_cat(2022)
-
 # Próximos passos
-#
-# Comportar grandes números:
-#
-# Utilizar decomposição fatorial dos números não-primos para calcular triângulos
-# proporcionais com quadrados menores e ganhar mais tempo
 #
 # Comportar múltiplos inputs:
 #
@@ -72,3 +122,4 @@ find_cat(2022)
 # Se len(hypotenuse) == 1, manter o algoritmo como tal
 # Se len(hypotenuse) > 1, deixar o algoritmo dinâmico para se mover ao longo do vetor e
 # cuspir uma matriz de tamanho 2:n com as combinações de catetos.
+
