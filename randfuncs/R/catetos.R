@@ -1,118 +1,142 @@
 find_cat <- function(hypotenuse = 5){
 
-  if(is.character(hypotenuse) & (grepl("[D-d]onut", hypotenuse) |
-                                 grepl("[D-d]oughnut", hypotenuse))){
+  if(any(!is.numeric(hypotenuse))){
 
-    return(cat("Get a grip, you\n",
-    " ____                    _
- |  _ \\  ___  _ __  _   _| |_
- | | | |/ _ \\| '_ \\| | | | __|
- | |_| | (_) | | | | |_| | |_ _
- |____/ \\___/|_| |_|\\__,_|\\__(_)
-                                "))
+    if(length(hypotenuse) == 1){
 
-  } else if(!is.numeric(hypotenuse)){
+      stop(paste0("Invalid input. '", hypotenuse, "' is not a number."))
 
-    stop(paste0("Invalid input. '", hypotenuse, "' is not a number."))
+    } else {
 
-    } else if(is.infinite(hypotenuse)){
+      stop(paste0("Invalid input. At least one hypotenuse is not a number."))
 
-      stop("Invalid input. The hypotenuse must be finite.")
+    }
 
-    } else if(!abs(hypotenuse) - round(hypotenuse, 0) == 0){
+    } else if(any(is.infinite(hypotenuse))){
 
-    stop("Not supported numeric format. Input value must be an integer.")
+      if(length(hypotenuse) == 1){
 
-    } else if(hypotenuse <= 0){
+        stop("Invalid input. The hypotenuse must be finite.")
 
-      stop("Invalid input. The hypotenuse must be > 0.")
+      } else {
+
+        stop("Invalid input. All hypotenuses must be finite.")
+
+      }
+
+    } else if(any(!abs(hypotenuse) - round(hypotenuse, 0) == 0)){
+
+    if(length(hypotenuse) == 1){
+
+      stop("Not supported numeric format. Input value must be an integer.")
+
+    } else {
+
+      stop("Not supported numeric format. All hypotenuses must be integers.")
+
+    }
+
+    } else if(any(hypotenuse <= 0)){
+
+      if(length(hypotenuse) == 1){
+
+        stop("Invalid input. The hypotenuse must be > 0.")
+
+      } else {
+
+        stop("Invalid input. All hypotenuses must be > 0.")
+
+      }
 
   }
 
   options(digits = 10)
 
-  seq_to_hyp <- seq_len(hypotenuse)
+  if(length(hypotenuse) == 1){
 
-  hyp_divisors <- seq_to_hyp[hypotenuse%%seq_to_hyp == 0]
+    seq_to_hyp <- seq_len(hypotenuse)
 
-  if(hypotenuse == 1){
+    hyp_divisors <- seq_to_hyp[hypotenuse%%seq_to_hyp == 0]
 
-    grt_divisor <- 1
+    if(hypotenuse == 1){
 
-  } else {
+      grt_divisor <- 1
 
-    grt_divisor <- hyp_divisors[length(hyp_divisors)/2]
+    } else {
 
-  }
+      grt_divisor <- hyp_divisors[length(hyp_divisors)/2]
 
-  hyp_reduced <- hypotenuse/grt_divisor
-
-  if(hyp_reduced < 500){
-
-    h2 <- hyp_reduced^2
-
-    n_seq <- 1:h2
-    sqrts <- sqrt(n_seq)
-    n_seq_sqrt <- n_seq[abs(sqrts) - round(sqrts, 0) == 0]
-
-    for(i in 1:length(n_seq_sqrt)){
-
-      c1 <- n_seq_sqrt[i]
-
-      c2 <- h2 - c1
-
-      if((abs(sqrt(c2)) - round(sqrt(c2), 0) == 0)){
-
-        if(c2 == 0 & sqrt(c1) == i){
-
-          stop(paste("No matches found. It is not possible to find a triangle with",
-                   "hypotenuse", hypotenuse, "and whole catheti."))
-
-          } else {
-
-            return(sqrt(c(c1, c2))*grt_divisor)
-            break
-
-          }
-      }
     }
-  } else {
 
-    seq_divisors <- c(0, seq_to_hyp[seq_to_hyp %% 500 == 0], ceiling(hypotenuse/500)*500)
+    hyp_reduced <- hypotenuse/grt_divisor
 
-    for(i in 1:length(seq_divisors)){
+    if(hyp_reduced < 500){
 
       h2 <- hyp_reduced^2
 
-      n_seq <- ((1 + seq_divisors[i]):seq_divisors[i + 1])^2
+      n_seq <- 1:h2
       sqrts <- sqrt(n_seq)
+      n_seq_sqrt <- n_seq[abs(sqrts) - round(sqrts, 0) == 0]
 
-      for(j in 1:length(n_seq)){
+      for(i in 1:length(n_seq_sqrt)){
 
-        c1 <- n_seq[j]
+        c1 <- n_seq_sqrt[i]
 
         c2 <- h2 - c1
 
         if((abs(sqrt(c2)) - round(sqrt(c2), 0) == 0)){
 
-          if(c2 == 0 | sqrt(c1) == j){
+          if(c2 == 0 & sqrt(c1) == i){
 
             stop(paste("No matches found. It is not possible to find a triangle with",
-                       "hypotenuse", hypotenuse, "and whole catheti."))
+                     "hypotenuse", hypotenuse, "and whole catheti."))
 
-          } else {
+            } else {
 
-            return(sqrt(c(c1, c2))*grt_divisor)
-            break
+              return(sqrt(c(c1, c2))*grt_divisor)
+              break
 
+            }
+        }
+      }
+    } else {
+
+      seq_divisors <- c(0, seq_to_hyp[seq_to_hyp %% 500 == 0], ceiling(hypotenuse/500)*500)
+
+      for(i in 1:length(seq_divisors)){
+
+        h2 <- hyp_reduced^2
+
+        n_seq <- ((1 + seq_divisors[i]):seq_divisors[i + 1])^2
+        sqrts <- sqrt(n_seq)
+
+        for(j in 1:length(n_seq)){
+
+          c1 <- n_seq[j]
+
+          c2 <- h2 - c1
+
+          if((abs(sqrt(c2)) - round(sqrt(c2), 0) == 0)){
+
+            if(c2 == 0 | sqrt(c1) == j){
+
+              stop(paste("No matches found. It is not possible to find a triangle with",
+                         "hypotenuse", hypotenuse, "and whole catheti."))
+
+            } else {
+
+              return(sqrt(c(c1, c2))*grt_divisor)
+              break
+
+            }
           }
         }
       }
-
     }
-
   }
 }
+
+
 
 # Próximos passos
 #
